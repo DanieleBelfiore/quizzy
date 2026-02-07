@@ -1,13 +1,14 @@
-import { Server, Socket } from 'socket.io';
+import {Server, Socket} from 'socket.io';
 import jwt from 'jsonwebtoken';
 import {
   createGame,
+  GameSession,
   getGame,
-  removeGame,
   getGameByAdminSocket,
   getGameByPlayerSocket,
+  removeGame,
 } from '../services/gameSession.js';
-import type { ClientToServerEvents, ServerToClientEvents } from '../../../shared/types.js';
+import type {ClientToServerEvents, ServerToClientEvents} from '@shared/types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
@@ -100,17 +101,7 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
         return;
       }
 
-      io.to(session.gameCode).emit('question_start', questionData);
-
-      // Auto-end question when timer expires
-      session.setQuestionTimer(() => {
-        const results = session.endQuestion();
-        io.to(session.gameCode).emit('question_end', results);
-
-        const leaderboard = session.getLeaderboard();
-        session.status = 'leaderboard';
-        io.to(session.gameCode).emit('leaderboard_update', { leaderboard });
-      });
+      handleQuestion(io, session, questionData)
     });
 
     // Player submits an answer
@@ -147,17 +138,7 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
 
       const questionData = session.startNextQuestion();
       if (!questionData) return;
-
-      io.to(session.gameCode).emit('question_start', questionData);
-
-      session.setQuestionTimer(() => {
-        const results = session.endQuestion();
-        io.to(session.gameCode).emit('question_end', results);
-
-        const leaderboard = session.getLeaderboard();
-        session.status = 'leaderboard';
-        io.to(session.gameCode).emit('leaderboard_update', { leaderboard });
-      });
+      handleQuestion(io, session, questionData);
     });
 
     // Admin ends game early
@@ -196,5 +177,25 @@ export function setupSocketHandlers(io: Server<ClientToServerEvents, ServerToCli
         console.log(`Player "${username}" left game ${playerGame.gameCode}`);
       }
     });
+  });
+}
+
+
+const handleQuestion = (io: Server<ClientToServerEvents, ServerToClientEvents>, session: GameSession, questionData: {
+  questionIndex: number;
+  totalQuestions: number;
+  questionText: string;
+  options: { id: number; text: string }[];
+  timerSeconds: number
+}) => {
+  io.to(session.gameCode).emit('question_start', questionData);
+
+  session.setQuestionTimer(() => {
+    const results = session.endQuestion();
+    io.to(session.gameCode).emit('question_end', results);
+
+    const leaderboard = session.getLeaderboard();
+    session.status = 'leaderboard';
+    io.to(session.gameCode).emit('leaderboard_update', {leaderboard});
   });
 }
