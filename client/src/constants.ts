@@ -11,8 +11,7 @@ export enum GameStatus {
 
 export enum SocketEvent {
     // Connection events
-    CONNECTION = 'connection',  // Server-side: io.on('connection')
-    CONNECT = 'connect',        // Client-side: socket.on('connect')
+    CONNECT = 'connect',
     DISCONNECT = 'disconnect',
 
     // Game lifecycle events

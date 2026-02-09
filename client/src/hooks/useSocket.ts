@@ -5,8 +5,6 @@ import type {ClientToServerEvents, LeaderboardEntry, ServerToClientEvents} from 
 
 type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
-export type GamePhase = GameStatus;
-
 export interface QuestionData {
   questionIndex: number;
   totalQuestions: number;
@@ -23,7 +21,7 @@ export interface QuestionResult {
 export function useSocket(token?: string) {
   const socketRef = useRef<GameSocket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [phase, setPhase] = useState<GamePhase>(GameStatus.IDLE);
+  const [phase, setPhase] = useState<GameStatus>(GameStatus.IDLE);
   const [gameCode, setGameCode] = useState<string | null>(null);
   const [playerCount, setPlayerCount] = useState(0);
   const [question, setQuestion] = useState<QuestionData | null>(null);

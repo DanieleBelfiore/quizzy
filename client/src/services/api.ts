@@ -78,22 +78,3 @@ export async function deleteQuiz(token: string, id: number) {
   if (!res.ok) throw new Error('Failed to delete quiz');
   return res.json();
 }
-
-export async function exportQuiz(token: string, id: number) {
-  const res = await fetch(`${API_BASE}/quizzes/${id}/export`, { headers: getHeaders(token) });
-  if (!res.ok) throw new Error('Failed to export quiz');
-  return res.json();
-}
-
-export async function importQuiz(token: string, data: unknown) {
-  const res = await fetch(`${API_BASE}/quizzes/import`, {
-    method: 'POST',
-    headers: getHeaders(token),
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to import quiz');
-  }
-  return res.json();
-}

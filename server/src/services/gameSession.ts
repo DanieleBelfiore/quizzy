@@ -23,7 +23,7 @@ export class GameSession {
   questionStartTime: number | null;
   adminSocketId: string;
 
-  private questions: QuestionWithOptions[];
+  private readonly questions: QuestionWithOptions[];
   private questionResults: Map<string, { correct: boolean; points: number }>;
   private questionTimer: ReturnType<typeof setTimeout> | null;
 

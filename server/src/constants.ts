@@ -1,7 +1,6 @@
 // ---- Enums ----
 
 export enum GameStatus {
-    IDLE = 'idle',
     WAITING = 'waiting',
     QUESTION = 'question',
     REVEAL = 'reveal',
@@ -11,8 +10,7 @@ export enum GameStatus {
 
 export enum SocketEvent {
     // Connection events
-    CONNECTION = 'connection',  // Server-side: io.on('connection')
-    CONNECT = 'connect',        // Client-side: socket.on('connect')
+    CONNECTION = 'connection',
     DISCONNECT = 'disconnect',
 
     // Game lifecycle events
